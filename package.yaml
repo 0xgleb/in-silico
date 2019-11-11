@@ -69,6 +69,17 @@ default-extensions:
 
 library:
   source-dirs: src
+  ghc-options:
+  - -Wall
+  - -Wsemigroup
+  - -Wmissing-monadfail-instances
+  - -Wnoncanonical-monoid-instances
+  - -Wnoncanonical-monad-instances
+  - -Wincomplete-record-updates
+  - -Wpartial-fields
+  - -Wimplicit-prelude
+  - -Wmissing-home-modules
+  - -Werror
 
 executables:
   in-silico-exe:

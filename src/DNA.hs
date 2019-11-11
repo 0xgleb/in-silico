@@ -8,6 +8,7 @@ module DNA
   , pattern G
 
   , parseDNANucs
+  , mkDoubleStrandedDNA
 
   , complement
   , reverseComplement
@@ -21,7 +22,7 @@ import           Protolude       hiding (complement)
 import           Test.QuickCheck
 
 type DNANucs
-  = '[Nuc.A, Nuc.C, Nuc.T, Nuc.G]
+  = '[ 'Nuc.A, 'Nuc.C, 'Nuc.T, 'Nuc.G ]
 
 -- class (nuc `Elem` DNANucs ~ 'True) => DNANuc (nuc :: Nucleotide) where
 
@@ -31,7 +32,7 @@ type DNANucs
 -- instance DNANuc 'G where
 
 newtype DNANucleotide
-  = DNANucleotide { getDNANucleotide :: Nuc.Nucleotide }
+  = DNANucleotide Nuc.Nucleotide
   deriving newtype (Show, Eq)
   deriving newtype (Arbitrary)
 
@@ -62,6 +63,10 @@ parseDNANucs :: Prelude.String -> Maybe [DNANucleotide]
 parseDNANucs
   = sequence . fmap mkDNANucleotide <=< Nuc.parseNucs
 
+mkDoubleStrandedDNA :: [DNANucleotide] -> [(DNANucleotide, DNANucleotide)]
+mkDoubleStrandedDNA strand
+  = zip strand $ reverseComplement strand
+
 
 complement :: [DNANucleotide] -> [DNANucleotide]
 complement = fmap $ \case
@@ -72,6 +77,7 @@ complement = fmap $ \case
 
 reverseComplement :: [DNANucleotide] -> [DNANucleotide]
 reverseComplement = reverse . complement
+
 
 -- complement :: NucList DNANuc -> NucList DNANuc
 -- complement = nucMap $ \case
