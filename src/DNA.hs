@@ -1,7 +1,5 @@
 module DNA
-  ( DNANucs
-  -- , DNANuc
-  , DNANucleotide
+  ( Nucleotide
   , pattern A
   , pattern C
   , pattern T
@@ -15,42 +13,32 @@ module DNA
   )
   where
 
-import qualified Nucleotide as Nuc
+import           GoldenStandard
+import qualified Nucleotide     as Nuc
 
 import qualified Prelude
-import           Protolude       hiding (complement)
 import           Test.QuickCheck
 
-type DNANucs
-  = '[ 'Nuc.A, 'Nuc.C, 'Nuc.T, 'Nuc.G ]
-
--- class (nuc `Elem` DNANucs ~ 'True) => DNANuc (nuc :: Nucleotide) where
-
--- instance DNANuc 'A where
--- instance DNANuc 'C where
--- instance DNANuc 'T where
--- instance DNANuc 'G where
-
-newtype DNANucleotide
-  = DNANucleotide Nuc.Nucleotide
+newtype Nucleotide
+  = Nucleotide Nuc.Nucleotide
   deriving newtype (Show, Eq)
   deriving newtype (Arbitrary)
 
-pattern A :: DNANucleotide
-pattern A = DNANucleotide Nuc.A
+pattern A :: Nucleotide
+pattern A = Nucleotide Nuc.A
 
-pattern C :: DNANucleotide
-pattern C = DNANucleotide Nuc.C
+pattern C :: Nucleotide
+pattern C = Nucleotide Nuc.C
 
-pattern T :: DNANucleotide
-pattern T = DNANucleotide Nuc.T
+pattern T :: Nucleotide
+pattern T = Nucleotide Nuc.T
 
-pattern G :: DNANucleotide
-pattern G = DNANucleotide Nuc.G
+pattern G :: Nucleotide
+pattern G = Nucleotide Nuc.G
 
 {-# COMPLETE A, C, T, G #-}
 
-mkDNANucleotide :: Nuc.Nucleotide -> Maybe DNANucleotide
+mkDNANucleotide :: Nuc.Nucleotide -> Maybe Nucleotide
 mkDNANucleotide = \case
   Nuc.A -> Just A
   Nuc.C -> Just C
@@ -59,32 +47,21 @@ mkDNANucleotide = \case
   _     -> Nothing
 
 
-parseDNANucs :: Prelude.String -> Maybe [DNANucleotide]
+parseDNANucs :: Prelude.String -> Maybe [Nucleotide]
 parseDNANucs
   = sequence . fmap mkDNANucleotide <=< Nuc.parseNucs
 
-mkDoubleStrandedDNA :: [DNANucleotide] -> [(DNANucleotide, DNANucleotide)]
+mkDoubleStrandedDNA :: [Nucleotide] -> [(Nucleotide, Nucleotide)]
 mkDoubleStrandedDNA strand
   = zip strand $ reverseComplement strand
 
 
-complement :: [DNANucleotide] -> [DNANucleotide]
+complement :: [Nucleotide] -> [Nucleotide]
 complement = fmap $ \case
   A -> T
   C -> G
   T -> A
   G -> C
 
-reverseComplement :: [DNANucleotide] -> [DNANucleotide]
+reverseComplement :: [Nucleotide] -> [Nucleotide]
 reverseComplement = reverse . complement
-
-
--- complement :: NucList DNANuc -> NucList DNANuc
--- complement = nucMap $ \case
---   TSin -> ASin
---   ASin -> TSin
---   CSin -> GSin
---   GSin -> CSin
-
--- reverseComplement :: NucList DNANuc -> NucList DNANuc
--- reverseComplement = reverseNucList . complement

@@ -1,5 +1,5 @@
 module RNA
-  ( RNANucleotide
+  ( Nucleotide
   , pattern A
   , pattern C
   , pattern U
@@ -10,27 +10,27 @@ module RNA
   where
 
 import qualified DNA
-import qualified Nucleotide as Nuc
+import           GoldenStandard
+import qualified Nucleotide     as Nuc
 
-import Protolude       hiding (complement)
 import Test.QuickCheck
 
-newtype RNANucleotide
-  = RNANucleotide Nuc.Nucleotide
+newtype Nucleotide
+  = Nucleotide Nuc.Nucleotide
   deriving newtype (Show, Eq)
   deriving newtype (Arbitrary)
 
-pattern A :: RNANucleotide
-pattern A = RNANucleotide Nuc.A
+pattern A :: Nucleotide
+pattern A = Nucleotide Nuc.A
 
-pattern C :: RNANucleotide
-pattern C = RNANucleotide Nuc.C
+pattern C :: Nucleotide
+pattern C = Nucleotide Nuc.C
 
-pattern U :: RNANucleotide
-pattern U = RNANucleotide Nuc.U
+pattern U :: Nucleotide
+pattern U = Nucleotide Nuc.U
 
-pattern G :: RNANucleotide
-pattern G = RNANucleotide Nuc.G
+pattern G :: Nucleotide
+pattern G = Nucleotide Nuc.G
 
 {-# COMPLETE A, C, U, G #-}
 
@@ -39,8 +39,8 @@ data TranscriptionError
   deriving (Show, Eq)
 
 fromDNA
-  :: [(DNA.DNANucleotide, DNA.DNANucleotide)]
-  -> Either TranscriptionError [RNANucleotide]
+  :: [(DNA.Nucleotide, DNA.Nucleotide)]
+  -> Either TranscriptionError [Nucleotide]
 
 fromDNA dna
   = codingStrand <&> fmap \case

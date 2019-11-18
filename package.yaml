@@ -7,7 +7,7 @@ maintainer:          "example@example.com"
 copyright:           "2019 Author name here"
 
 extra-source-files:
-- README.md
+- README.org
 - ChangeLog.md
 
 # Metadata used when publishing your package
@@ -71,6 +71,7 @@ library:
   source-dirs: src
   ghc-options:
   - -Wall
+  - -Wno-unticked-promoted-constructors
   - -Wsemigroup
   - -Wmissing-monadfail-instances
   - -Wnoncanonical-monoid-instances
@@ -90,6 +91,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     - -Wall
+    - -Wno-unticked-promoted-constructors
     - -Wsemigroup
     - -Wmissing-monadfail-instances
     - -Wnoncanonical-monoid-instances
