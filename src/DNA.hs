@@ -5,7 +5,7 @@ module DNA
   , pattern T
   , pattern G
 
-  , parseDNANucs
+  , parseDNASeq
   , mkDoubleStrandedDNA
 
   , complement
@@ -38,17 +38,19 @@ pattern G = Nucleotide Nuc.G
 
 {-# COMPLETE A, C, T, G #-}
 
-mkDNANucleotide :: Nuc.Nucleotide -> Maybe Nucleotide
+mkDNANucleotide :: Nuc.Nucleotide -> Either Text Nucleotide
 mkDNANucleotide = \case
-  Nuc.A -> Just A
-  Nuc.C -> Just C
-  Nuc.T -> Just T
-  Nuc.G -> Just G
-  _     -> Nothing
+  Nuc.A -> Right A
+  Nuc.C -> Right C
+  Nuc.T -> Right T
+  Nuc.G -> Right G
+
+  nuc ->
+    Left $ "Invalid DNA nucleotide: " <> show nuc
 
 
-parseDNANucs :: Prelude.String -> Maybe [Nucleotide]
-parseDNANucs
+parseDNASeq :: Prelude.String -> Either Text [Nucleotide]
+parseDNASeq
   = sequence . fmap mkDNANucleotide <=< Nuc.parseNucs
 
 mkDoubleStrandedDNA :: [Nucleotide] -> [(Nucleotide, Nucleotide)]

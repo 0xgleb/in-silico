@@ -9,6 +9,7 @@ module Nucleotide
 import GoldenStandard
 
 import qualified Data.Map.Lazy   as Map
+import qualified Data.Text       as Tx
 import qualified Prelude
 import qualified Safe
 import           Test.QuickCheck
@@ -24,8 +25,11 @@ data Nucleotide
 instance Arbitrary Nucleotide where
   arbitrary = toEnum . flip mod 4 . abs <$> arbitrary
 
-parseNucs :: Prelude.String -> Maybe [Nucleotide]
-parseNucs = sequence . fmap (Safe.readMay . pure)
+parseNucs :: Prelude.String -> Either Text [Nucleotide]
+parseNucs
+  = sequence
+  . fmap (either (Left . Tx.pack) Right . Safe.readEitherSafe . pure)
+  . trim isEmpty
 
 countNucs :: [Nucleotide] -> Map Nucleotide Int
 countNucs

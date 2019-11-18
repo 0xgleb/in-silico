@@ -6,6 +6,8 @@ module RNA
   , pattern G
 
   , fromDNA
+  , mkRNANucleotide
+  , parseRNASeq
   )
   where
 
@@ -13,7 +15,8 @@ import qualified DNA
 import           GoldenStandard
 import qualified Nucleotide     as Nuc
 
-import Test.QuickCheck
+import qualified Prelude
+import           Test.QuickCheck
 
 newtype Nucleotide
   = Nucleotide Nuc.Nucleotide
@@ -64,3 +67,19 @@ fromDNA dna
 
       | otherwise
       = Left NoTATABox
+
+
+mkRNANucleotide :: Nuc.Nucleotide -> Either Text Nucleotide
+mkRNANucleotide = \case
+  Nuc.A -> Right A
+  Nuc.C -> Right C
+  Nuc.U -> Right U
+  Nuc.G -> Right G
+
+  nuc ->
+    Left $ "Invalid DNA nucleotide: " <> show nuc
+
+
+parseRNASeq :: Prelude.String -> Either Text [Nucleotide]
+parseRNASeq
+  = sequence . fmap mkRNANucleotide <=< Nuc.parseNucs

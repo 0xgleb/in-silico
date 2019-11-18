@@ -42,12 +42,12 @@ spec :: Spec
 spec = do
   describe "complement" $ do
     it "calculates the DNA complement strand" $ do
-      fmap DNA.complement (DNA.parseDNANucs sampleGene) `shouldBe` DNA.parseDNANucs sampleComplement
+      fmap DNA.complement (DNA.parseDNASeq sampleGene) `shouldBe` DNA.parseDNASeq sampleComplement
 
     it "complement . complement === identity" $ property
       $ \seq -> DNA.complement (DNA.complement seq) == seq
 
   describe "reverseComplement" $ do
     it "calculates the DNA reverse complement strand" $ do
-      fmap DNA.reverseComplement (DNA.parseDNANucs sampleGene)
-        `shouldBe` DNA.parseDNANucs sampleReverseComplement
+      fmap DNA.reverseComplement (DNA.parseDNASeq sampleGene)
+        `shouldBe` DNA.parseDNASeq sampleReverseComplement

@@ -25,9 +25,9 @@ spec :: Spec
 spec = do
   describe "parseNucs" $ do
     it "parses nucleotide strings" $ do
-      parseNucs "ACAATGC" `shouldBe` Just [A, C, A, A, T, G, C]
+      parseNucs "ACAATGC" `shouldBe` Right [A, C, A, A, T, G, C]
 
   describe "countNucs" $ do
     it "returns a map of nucleotides and number of them in the sequence" $ do
       fmap countNucs (parseNucs testSeq)
-        `shouldBe` Just (Map.fromList [(A, 255), (C, 95), (T, 149), (G, 122)])
+        `shouldBe` Right (Map.fromList [(A, 255), (C, 95), (T, 149), (G, 122)])
