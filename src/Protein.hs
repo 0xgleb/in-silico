@@ -1,33 +1,34 @@
 module Protein
   ( synthesizeProteins
-  , codoneToProtein
+  , codonToProtein
   )
   where
 
 import           GoldenStandard
 import qualified RNA
+import qualified Codon
 
 data Protein
-  = A
-  | C
-  | D
-  | E
-  | F
-  | G
-  | H
-  | I
-  | K
-  | L
-  | M
-  | N
-  | P
-  | Q
-  | R
-  | S
-  | T
-  | V
-  | W
-  | Y
+  = A -- ^ Alanine
+  | C -- ^ Cysteine
+  | D -- ^ Aspartic acid
+  | E -- ^ Glutamic acid
+  | F -- ^ Phenylalanine
+  | G -- ^ Glycine
+  | H -- ^ Histidine
+  | I -- ^ Isoleucine
+  | K -- ^ Lysine
+  | L -- ^ Leucine
+  | M -- ^ Methionine
+  | N -- ^ Asparagine
+  | P -- ^ Proline
+  | Q -- ^ Glutamine
+  | R -- ^ Arginine
+  | S -- ^ Serine
+  | T -- ^ Threonine
+  | V -- ^ Valine
+  | W -- ^ Tryptophan
+  | Y -- ^ Tyrosine
   deriving (Show, Eq)
 
 data ProteinBuilder
@@ -37,10 +38,9 @@ data ProteinBuilder
 
 synthesizeProteins :: [RNA.Nucleotide] -> [Protein]
 synthesizeProteins = synth []
-
   where
     synth proteinSeq (n1:n2:n3:ns)
-      = case codoneToProtein (n1, n2, n3) of
+      = case codonToProtein $ Codon.rnaTripletToCodon (n1, n2, n3) of
           Protein protein ->
             synth (proteinSeq <> [protein]) ns
 
@@ -51,72 +51,72 @@ synthesizeProteins = synth []
       = proteinSeq
 
 
-codoneToProtein
-  :: (RNA.Nucleotide, RNA.Nucleotide, RNA.Nucleotide)
+codonToProtein
+  :: Codon.Codon
   -> ProteinBuilder
 
-codoneToProtein = \case
-  (RNA.A, RNA.U, RNA.G) -> Protein M
-  (RNA.G, RNA.C, RNA.G) -> Protein A
-  (RNA.U, RNA.C, RNA.A) -> Protein S
-  (RNA.G, RNA.A, RNA.A) -> Protein E
-  (RNA.G, RNA.G, RNA.G) -> Protein G
-  (RNA.G, RNA.G, RNA.U) -> Protein G
-  (RNA.A, RNA.A, RNA.A) -> Protein K
-  (RNA.G, RNA.A, RNA.G) -> Protein E
-  (RNA.A, RNA.A, RNA.U) -> Protein N
-  (RNA.C, RNA.U, RNA.A) -> Protein L
-  (RNA.C, RNA.A, RNA.U) -> Protein H
-  (RNA.U, RNA.C, RNA.G) -> Protein S
-  (RNA.U, RNA.A, RNA.G) -> Stop
-  (RNA.G, RNA.U, RNA.G) -> Protein V
-  (RNA.U, RNA.A, RNA.U) -> Protein Y
-  (RNA.C, RNA.C, RNA.U) -> Protein P
-  (RNA.A, RNA.C, RNA.U) -> Protein T
-  (RNA.U, RNA.C, RNA.C) -> Protein S
-  (RNA.C, RNA.A, RNA.G) -> Protein Q
-  (RNA.C, RNA.C, RNA.A) -> Protein P
-  (RNA.U, RNA.A, RNA.A) -> Stop
-  (RNA.A, RNA.G, RNA.A) -> Protein R
-  (RNA.A, RNA.C, RNA.G) -> Protein T
-  (RNA.C, RNA.A, RNA.A) -> Protein Q
-  (RNA.U, RNA.G, RNA.U) -> Protein C
-  (RNA.G, RNA.C, RNA.U) -> Protein A
-  (RNA.U, RNA.U, RNA.C) -> Protein F
-  (RNA.A, RNA.G, RNA.U) -> Protein S
-  (RNA.A, RNA.U, RNA.A) -> Protein I
-  (RNA.U, RNA.U, RNA.A) -> Protein L
-  (RNA.C, RNA.C, RNA.G) -> Protein P
-  (RNA.A, RNA.U, RNA.C) -> Protein I
-  (RNA.U, RNA.U, RNA.U) -> Protein F
-  (RNA.C, RNA.G, RNA.U) -> Protein R
-  (RNA.U, RNA.G, RNA.A) -> Stop
-  (RNA.G, RNA.U, RNA.A) -> Protein V
-  (RNA.U, RNA.C, RNA.U) -> Protein S
-  (RNA.C, RNA.A, RNA.C) -> Protein H
-  (RNA.G, RNA.U, RNA.U) -> Protein V
-  (RNA.G, RNA.A, RNA.U) -> Protein D
-  (RNA.C, RNA.G, RNA.A) -> Protein R
-  (RNA.G, RNA.G, RNA.A) -> Protein G
-  (RNA.G, RNA.U, RNA.C) -> Protein V
-  (RNA.G, RNA.G, RNA.C) -> Protein G
-  (RNA.U, RNA.G, RNA.C) -> Protein C
-  (RNA.C, RNA.U, RNA.G) -> Protein L
-  (RNA.C, RNA.U, RNA.C) -> Protein L
-  (RNA.C, RNA.G, RNA.C) -> Protein R
-  (RNA.C, RNA.G, RNA.G) -> Protein R
-  (RNA.A, RNA.A, RNA.C) -> Protein N
-  (RNA.G, RNA.C, RNA.C) -> Protein A
-  (RNA.A, RNA.U, RNA.U) -> Protein I
-  (RNA.A, RNA.G, RNA.G) -> Protein R
-  (RNA.G, RNA.A, RNA.C) -> Protein D
-  (RNA.A, RNA.C, RNA.C) -> Protein T
-  (RNA.A, RNA.G, RNA.C) -> Protein S
-  (RNA.U, RNA.A, RNA.C) -> Protein Y
-  (RNA.A, RNA.C, RNA.A) -> Protein T
-  (RNA.A, RNA.A, RNA.G) -> Protein K
-  (RNA.G, RNA.C, RNA.A) -> Protein A
-  (RNA.U, RNA.U, RNA.G) -> Protein L
-  (RNA.C, RNA.C, RNA.C) -> Protein P
-  (RNA.C, RNA.U, RNA.U) -> Protein L
-  (RNA.U, RNA.G, RNA.G) -> Protein W
+codonToProtein = \case
+  Codon.AUG -> Protein M
+  Codon.GCG -> Protein A
+  Codon.UCA -> Protein S
+  Codon.GAA -> Protein E
+  Codon.GGG -> Protein G
+  Codon.GGU -> Protein G
+  Codon.AAA -> Protein K
+  Codon.GAG -> Protein E
+  Codon.AAU -> Protein N
+  Codon.CUA -> Protein L
+  Codon.CAU -> Protein H
+  Codon.UCG -> Protein S
+  Codon.UAG -> Stop
+  Codon.GUG -> Protein V
+  Codon.UAU -> Protein Y
+  Codon.CCU -> Protein P
+  Codon.ACU -> Protein T
+  Codon.UCC -> Protein S
+  Codon.CAG -> Protein Q
+  Codon.CCA -> Protein P
+  Codon.UAA -> Stop
+  Codon.AGA -> Protein R
+  Codon.ACG -> Protein T
+  Codon.CAA -> Protein Q
+  Codon.UGU -> Protein C
+  Codon.GCU -> Protein A
+  Codon.UUC -> Protein F
+  Codon.AGU -> Protein S
+  Codon.AUA -> Protein I
+  Codon.UUA -> Protein L
+  Codon.CCG -> Protein P
+  Codon.AUC -> Protein I
+  Codon.UUU -> Protein F
+  Codon.CGU -> Protein R
+  Codon.UGA -> Stop
+  Codon.GUA -> Protein V
+  Codon.UCU -> Protein S
+  Codon.CAC -> Protein H
+  Codon.GUU -> Protein V
+  Codon.GAU -> Protein D
+  Codon.CGA -> Protein R
+  Codon.GGA -> Protein G
+  Codon.GUC -> Protein V
+  Codon.GGC -> Protein G
+  Codon.UGC -> Protein C
+  Codon.CUG -> Protein L
+  Codon.CUC -> Protein L
+  Codon.CGC -> Protein R
+  Codon.CGG -> Protein R
+  Codon.AAC -> Protein N
+  Codon.GCC -> Protein A
+  Codon.AUU -> Protein I
+  Codon.AGG -> Protein R
+  Codon.GAC -> Protein D
+  Codon.ACC -> Protein T
+  Codon.AGC -> Protein S
+  Codon.UAC -> Protein Y
+  Codon.ACA -> Protein T
+  Codon.AAG -> Protein K
+  Codon.GCA -> Protein A
+  Codon.UUG -> Protein L
+  Codon.CCC -> Protein P
+  Codon.CUU -> Protein L
+  Codon.UGG -> Protein W

@@ -39,34 +39,30 @@ pattern G = Nucleotide Nuc.G
 
 data TranscriptionError
   = NoTATABox
+  | CodingStrandErr Text
   deriving (Show, Eq)
 
 fromDNA
-  :: [(DNA.Nucleotide, DNA.Nucleotide)]
+  :: [DNA.Nucleotide]
   -> Either TranscriptionError [Nucleotide]
 
 fromDNA dna
-  = codingStrand <&> fmap \case
+  = first CodingStrandErr (DNA.getCodingStrand dna) >>= findTATA <&> fmap \case
       DNA.A -> A
       DNA.C -> C
       DNA.T -> U
       DNA.G -> G
 
   where
-    (firstStrand, secondStrand) = unzip dna
+    findTATA = \case
+      nucs@(DNA.T : DNA.A : DNA.T : DNA.A : DNA.A : DNA.A : _) ->
+        Right nucs
 
-    tataBox
-      = [DNA.T, DNA.A, DNA.T, DNA.A]
+      _ : ns ->
+        findTATA ns
 
-    codingStrand
-      | take 4 firstStrand == tataBox
-      = Right firstStrand
-
-      | take 4 secondStrand == tataBox
-      = Right secondStrand
-
-      | otherwise
-      = Left NoTATABox
+      [] ->
+        Left NoTATABox
 
 
 mkRNANucleotide :: Nuc.Nucleotide -> Either Text Nucleotide
@@ -77,7 +73,7 @@ mkRNANucleotide = \case
   Nuc.G -> Right G
 
   nuc ->
-    Left $ "Invalid DNA nucleotide: " <> show nuc
+    Left $ "Invalid RNA nucleotide: " <> show nuc
 
 
 parseRNASeq :: Prelude.String -> Either Text [Nucleotide]

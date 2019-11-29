@@ -10,6 +10,7 @@ module DNA
 
   , complement
   , reverseComplement
+  , getCodingStrand
   )
   where
 
@@ -67,3 +68,21 @@ complement = fmap $ \case
 
 reverseComplement :: [Nucleotide] -> [Nucleotide]
 reverseComplement = reverse . complement
+
+getCodingStrand :: [DNA.Nucleotide] -> Either Text [DNA.Nucleotide]
+getCodingStrand strand
+  = finder strand
+
+  where
+    finder current = case current of
+      A : T : G : _ ->
+        Right strand
+
+      T : A : C : _ ->
+        Right $ complement strand
+
+      _ : ns ->
+        finder ns
+
+      [] ->
+        Left "Can't find a start codon or its complement!"

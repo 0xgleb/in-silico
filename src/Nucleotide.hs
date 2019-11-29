@@ -15,11 +15,7 @@ import qualified Safe
 import           Test.QuickCheck
 
 data Nucleotide
-  = A
-  | C
-  | T
-  | G
-  | U
+  = A | C | T | G | U
   deriving stock (Show, Read, Eq, Ord, Enum)
 
 instance Arbitrary Nucleotide where
