@@ -22,5 +22,9 @@ spec = do
         Right rna -> pure rna
         Left  err -> panic err
 
-      foldMap show (Protein.synthesizeProteins rna)
+      proteins <- case Protein.synthesizeProteins rna of
+        Right ps  -> pure ps
+        Left  err -> panic $ show err
+
+      foldMap show (foldMap Protein.getAminoAcids proteins)
         `shouldBe` trim isEmpty proteinSeq
