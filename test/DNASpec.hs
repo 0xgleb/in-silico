@@ -45,7 +45,10 @@ spec = do
       fmap DNA.complement (DNA.parseDNASeq sampleGene) `shouldBe` DNA.parseDNASeq sampleComplement
 
     it "complement . complement === identity" $ property
-      $ \seq -> DNA.complement (DNA.complement seq) == seq
+      $ \nucs ->
+          let Right dnaNucs = sequence $ DNA.mkDNANucleotide <$> filter (/= Nuc.U) nucs
+
+          in DNA.complement (DNA.complement dnaNucs) == dnaNucs
 
   describe "reverseComplement" $ do
     it "calculates the DNA reverse complement strand" $ do

@@ -5,6 +5,7 @@ module DNA
   , pattern T
   , pattern G
 
+  , mkDNANucleotide
   , parseDNASeq
   , mkDoubleStrandedDNA
 
@@ -18,12 +19,10 @@ import           GoldenStandard
 import qualified Nucleotide     as Nuc
 
 import qualified Prelude
-import           Test.QuickCheck
 
 newtype Nucleotide
   = Nucleotide Nuc.Nucleotide
   deriving newtype (Show, Eq)
-  deriving newtype (Arbitrary)
 
 pattern A :: Nucleotide
 pattern A = Nucleotide Nuc.A
