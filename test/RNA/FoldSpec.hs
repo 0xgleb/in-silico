@@ -87,4 +87,4 @@ spec = do
 
           diff s e = if s == e then Nothing else Just s
 
-      Map.differenceWith diff (score rna) expectedMap `shouldBe` mempty
+      Map.differenceWith diff (scoreWatsonCrick rna) expectedMap `shouldBe` mempty

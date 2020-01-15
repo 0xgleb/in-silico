@@ -1,6 +1,7 @@
 module RNA.Fold
   ( Score(..)
   , score
+  , scoreWatsonCrick
   )
   where
 
@@ -13,9 +14,17 @@ newtype Score
   = Score { getScore :: Integer }
   deriving newtype (Show, Eq, Ord, Num)
 
+scoreWatsonCrick :: [Nucleotide] -> Map [Nucleotide] Score
+scoreWatsonCrick = score $ \x y ->
+  if x == complement y then 1 else 0
+
 -- | Approximate energy level of the native fold using Nussinov Algorithm
-score :: [Nucleotide] -> Map [Nucleotide] Score
-score rnaSeq
+score
+  :: (Nucleotide -> Nucleotide -> Score)
+  -> [Nucleotide]
+  -> Map [Nucleotide] Score
+
+score scorePair rnaSeq
   = combine 3 rnaSeq $ scorePairs rnaSeq mempty
 
   where
@@ -43,7 +52,9 @@ score rnaSeq
         cur = take n nucs
 
         pairedScore
-          = maybe 1 (+ 1) $ Map.lookup (drop 1 $ take (n - 1) cur) scoreMap
+          = Map.lookup (drop 1 $ take (n - 1) cur) scoreMap
+          & let pair = fromMaybe 0 $ scorePair <$> headMay cur <*> lastMay cur
+            in  maybe pair (+ pair)
 
         unpairedScore key
           = fromMaybe 0 $ Map.lookup key scoreMap
@@ -79,7 +90,7 @@ score rnaSeq
         newMap = Map.alter upd [x, y]
 
         upd = Just . \case
-          Nothing  -> Score $ if x == complement y then 1 else 0
+          Nothing  -> scorePair x y
           Just val -> val
 
     scorePairs _ scoreMap = scoreMap
