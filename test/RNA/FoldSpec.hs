@@ -2,11 +2,15 @@ module RNA.FoldSpec (spec) where
 
 import GoldenStandard
 import RNA
+import RNA.MoleculeSpec ()
 
 import qualified Data.Map.Internal.Debug as Map.Debug
 import qualified Data.Map.Lazy           as Map
+import qualified Debug.Trace             as Debug
 
 import Test.Hspec
+import Test.QuickCheck
+
 
 rnaSeq :: String
 rnaSeq = "AUGGCAUCGGC"
@@ -14,12 +18,19 @@ rnaSeq = "AUGGCAUCGGC"
 spec :: Spec
 spec = do
   describe "score" $ do
+    it "fst . finalScore == scoreFold . snd . finalScore" $ property $ \nucs ->
+      let scr = finalScore nucs
+
+      in fst scr == scoreFold (snd scr)
+
     it "returns the number of hydrogen bonds in the optimal RNA fold" $ do
       let Right rna = parseRNASeq rnaSeq
 
           expectedMap :: Map [Nucleotide] (Score, [Fold])
           expectedMap
-            = Map.insert [A] (0, [UnpairedNuc])
+            = Map.insert [] (0, [])
+
+            . Map.insert [A] (0, [UnpairedNuc])
             . Map.insert [U] (0, [UnpairedNuc])
             . Map.insert [G] (0, [UnpairedNuc])
             . Map.insert [C] (0, [UnpairedNuc])

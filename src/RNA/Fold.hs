@@ -4,6 +4,7 @@ module RNA.Fold
   , Fold(..)
   , showFold
   , flatPair
+  , scoreFold
 
   , foldAndShow
   , finalScore
@@ -12,12 +13,13 @@ module RNA.Fold
   )
   where
 
+import Complementary
 import GoldenStandard
 import RNA.Molecule
 
 import qualified Data.Map.Lazy as Map
+import qualified Debug.Trace   as Debug
 import qualified Prelude
-import qualified Debug.Trace as Debug
 
 data Fold
   = Pair [Fold]
@@ -25,20 +27,24 @@ data Fold
   deriving (Show, Eq)
 
 showFold :: [Fold] -> Text
-showFold = foldMap showAFold
+showFold = foldMap \case
+  Pair innerFold ->
+    "(" <> showFold innerFold <> ")"
 
-  where
-    showAFold = \case
-      Pair innerFold ->
-        "(" <> showFold innerFold <> ")"
-
-      UnpairedNuc ->
-        "."
+  UnpairedNuc ->
+    "."
 
 
 newtype Score
   = Score { getScore :: Integer }
   deriving newtype (Show, Eq, Ord, Num)
+
+instance Semigroup Score where
+  Score x <> Score y = Score $ x + y
+
+instance Monoid Score where
+  mempty = 0
+
 
 flatPair :: Fold
 flatPair = Pair []
@@ -47,6 +53,16 @@ foldAndShow :: [Nucleotide] -> Text
 foldAndShow nucs
   = let folds = snd $ finalScore nucs
      in foldMap show nucs <> "\n" <> showFold folds
+
+
+scoreFold :: [Fold] -> Score
+scoreFold = foldMap \case
+  Pair innerFold ->
+    1 + scoreFold innerFold
+
+  UnpairedNuc ->
+    0
+
 
 finalScore :: [Nucleotide] -> (Score, [Fold])
 finalScore nucs
@@ -144,7 +160,8 @@ score scorePair rnaSeq
                 )
 
     initialScoreMap
-      = Map.insert [A] (0, [UnpairedNuc])
+      = Map.insert []  (0, [])
+      . Map.insert [A] (0, [UnpairedNuc])
       . Map.insert [U] (0, [UnpairedNuc])
       . Map.insert [G] (0, [UnpairedNuc])
       . Map.insert [C] (0, [UnpairedNuc])

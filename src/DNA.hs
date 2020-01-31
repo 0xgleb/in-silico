@@ -9,12 +9,12 @@ module DNA
   , parseDNASeq
   , mkDoubleStrandedDNA
 
-  , complement
   , reverseComplement
   , getCodingStrand
   )
   where
 
+import           Complementary
 import           GoldenStandard
 import qualified Nucleotide     as Nuc
 
@@ -58,12 +58,12 @@ mkDoubleStrandedDNA strand
   = zip strand $ reverseComplement strand
 
 
-complement :: [Nucleotide] -> [Nucleotide]
-complement = fmap $ \case
-  A -> T
-  C -> G
-  T -> A
-  G -> C
+instance HasComplement Nucleotide where
+  complement = \case
+    A -> T
+    C -> G
+    T -> A
+    G -> C
 
 reverseComplement :: [Nucleotide] -> [Nucleotide]
 reverseComplement = reverse . complement

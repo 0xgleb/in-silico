@@ -8,10 +8,10 @@ module RNA.Molecule
   , fromDNA
   , mkRNANucleotide
   , parseRNASeq
-  , complement
   )
   where
 
+import           Complementary
 import qualified DNA
 import           GoldenStandard
 import qualified Nucleotide     as Nuc
@@ -79,9 +79,9 @@ parseRNASeq :: Prelude.String -> Either Text [Nucleotide]
 parseRNASeq
   = sequence . fmap mkRNANucleotide <=< Nuc.parseNucs
 
-complement :: Nucleotide -> Nucleotide
-complement = \case
-  A -> U
-  U -> A
-  C -> G
-  G -> C
+instance HasComplement Nucleotide where
+  complement = \case
+    A -> U
+    U -> A
+    C -> G
+    G -> C

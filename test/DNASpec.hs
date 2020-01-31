@@ -1,7 +1,8 @@
 module DNASpec (spec) where
 
+import           Complementary
 import qualified DNA
-import qualified Nucleotide as Nuc
+import qualified Nucleotide    as Nuc
 
 import qualified Data.Map.Lazy as Map
 import qualified Prelude
@@ -42,13 +43,14 @@ spec :: Spec
 spec = do
   describe "complement" $ do
     it "calculates the DNA complement strand" $ do
-      fmap DNA.complement (DNA.parseDNASeq sampleGene) `shouldBe` DNA.parseDNASeq sampleComplement
+      fmap complement (DNA.parseDNASeq sampleGene)
+        `shouldBe` DNA.parseDNASeq sampleComplement
 
-    it "complement . complement === identity" $ property
-      $ \nucs ->
-          let Right dnaNucs = sequence $ DNA.mkDNANucleotide <$> filter (/= Nuc.U) nucs
+    it "complement . complement === identity" $ property $ \nucs ->
+      let Right dnaNucs
+            = sequence $ DNA.mkDNANucleotide <$> filter (/= Nuc.U) nucs
 
-          in DNA.complement (DNA.complement dnaNucs) == dnaNucs
+      in complement (complement dnaNucs) == dnaNucs
 
   describe "reverseComplement" $ do
     it "calculates the DNA reverse complement strand" $ do

@@ -41,9 +41,11 @@ data CodonError
   = NoStopCodon
   deriving (Show, Eq)
 
-readTillStop :: [RNA.Nucleotide] -> Either CodonError ([AminoAcid], [RNA.Nucleotide])
-readTillStop = rts []
+readTillStop
+  :: [RNA.Nucleotide]
+  -> Either CodonError ([AminoAcid], [RNA.Nucleotide])
 
+readTillStop = rts []
   where
     rts acids = \case
       n1 : n2 : n3 : ns ->

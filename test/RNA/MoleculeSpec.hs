@@ -1,5 +1,6 @@
 module RNA.MoleculeSpec (spec) where
 
+import           Complementary
 import           GoldenStandard
 import qualified Nucleotide     as Nuc
 import qualified RNA
@@ -10,6 +11,19 @@ import qualified Prelude
 import NucleotideSpec  ()
 import Test.Hspec
 import Test.QuickCheck
+
+
+instance Arbitrary RNA.Nucleotide where
+  arbitrary = do
+    nuc <- arbitrary
+
+    case RNA.mkRNANucleotide nuc of
+      Right rnaNuc ->
+        pure rnaNuc
+
+      Left _ ->
+        arbitrary
+
 
 sampleGene :: Prelude.String
 sampleGene
@@ -35,12 +49,9 @@ spec = do
     it "calculates the RNA complement strand" $ do
       let Right rna = RNA.parseRNASeq sampleGene
 
-          Right complement = RNA.parseRNASeq sampleComplement
+          Right rnaComplement = RNA.parseRNASeq sampleComplement
 
-      fmap RNA.complement rna `shouldBe` complement
+      fmap complement rna `shouldBe` rnaComplement
 
-    it "complement . complement === identity" $ property
-      $ \nuc -> nuc /= Nuc.T ==>
-          let Right rnaNuc = RNA.mkRNANucleotide nuc
-
-          in RNA.complement (RNA.complement rnaNuc) == rnaNuc
+    it "complement . complement === identity" $ property $ \(nuc :: RNA.Nucleotide) ->
+      complement (complement nuc) == nuc
