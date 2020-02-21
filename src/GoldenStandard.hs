@@ -5,6 +5,8 @@ module GoldenStandard
 
   , Prelude.String
   , Prelude.lines
+
+  , type ($)
   )
   where
 
